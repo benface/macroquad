@@ -636,6 +636,9 @@ impl QuadGl {
         let source = match shader {
             ShaderSource::Glsl { fragment, .. } => fragment,
             ShaderSource::Msl { program } => program,
+            // `_ScreenTexture` doesn't work on Metal yet, so a compiled
+            // library has nothing to look for.
+            ShaderSource::MetalLibrary { .. } => "",
         };
         let wants_screen_texture = source.contains("_ScreenTexture");
         let shader = ctx.new_shader(shader, shader_meta)?;
