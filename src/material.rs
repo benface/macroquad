@@ -42,6 +42,16 @@ impl Material {
     pub fn set_texture(&self, name: &str, texture: Texture2D) {
         get_context().gl.set_texture(self.pipeline.0, name, texture);
     }
+
+    /// Starts getting the material ready to draw into `pass`, or the
+    /// screen if `None`, so its first draw there waits less. On Metal,
+    /// that builds a pipeline state for the pass's attachment formats.
+    pub fn prepare(&self, pass: Option<miniquad::RenderPass>) {
+        let context = &mut get_context();
+        context
+            .gl
+            .prepare_pipeline(&mut *context.quad_context, self.pipeline.0, pass);
+    }
 }
 
 /// Params used for material loading.

@@ -865,6 +865,18 @@ impl QuadGl {
         }
     }
 
+    /// Starts getting `pipeline` ready to draw into `pass`, or the screen
+    /// if `None`. See [`RenderingBackend::prepare_pipeline`].
+    pub fn prepare_pipeline(
+        &mut self,
+        ctx: &mut dyn RenderingBackend,
+        pipeline: GlPipeline,
+        pass: Option<miniquad::RenderPass>,
+    ) {
+        let pipeline = self.pipelines.get_quad_pipeline_mut(pipeline).pipeline;
+        ctx.prepare_pipeline(&pipeline, pass);
+    }
+
     pub fn pipeline(&mut self, pipeline: Option<GlPipeline>) {
         if self.state.pipeline == pipeline {
             return;
