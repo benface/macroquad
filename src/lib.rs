@@ -261,6 +261,9 @@ enum MiniquadInputEvent {
     },
     KeyDown {
         keycode: KeyCode,
+        /// What the key types on the keyboard's layout, as
+        /// [`miniquad::EventHandler::key_down_with_character_event`] has it.
+        character: Option<char>,
         modifiers: KeyMods,
         repeat: bool,
     },
@@ -293,9 +296,10 @@ impl MiniquadInputEvent {
             } => t.char_event(*character, *modifiers, *repeat),
             KeyDown {
                 keycode,
+                character,
                 modifiers,
                 repeat,
-            } => t.key_down_event(*keycode, *modifiers, *repeat),
+            } => t.key_down_with_character_event(*keycode, *character, *modifiers, *repeat),
             KeyUp { keycode, modifiers } => t.key_up_event(*keycode, *modifiers),
             Touch { phase, id, x, y } => t.touch_event(*phase, *id, *x, *y),
             WindowMinimized => t.window_minimized_event(),
@@ -697,7 +701,13 @@ impl EventHandler for Stage {
         });
     }
 
-    fn key_down_event(&mut self, keycode: KeyCode, modifiers: KeyMods, repeat: bool) {
+    fn key_down_with_character_event(
+        &mut self,
+        keycode: KeyCode,
+        character: Option<char>,
+        modifiers: KeyMods,
+        repeat: bool,
+    ) {
         let context = get_context();
         context.keys_down.insert(keycode);
         if repeat == false {
@@ -707,6 +717,7 @@ impl EventHandler for Stage {
         context.input_events.iter_mut().for_each(|arr| {
             arr.push(MiniquadInputEvent::KeyDown {
                 keycode,
+                character,
                 modifiers,
                 repeat,
             });
